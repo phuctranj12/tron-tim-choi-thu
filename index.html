@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Trốn Tìm">
+<meta name="theme-color" content="#05080a">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="icon.png">
+<link rel="manifest" href="manifest.json">
+<title>Trốn Tìm</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #05080a; overflow: hidden; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+  #c { position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100dvh; display: block; background: #05080a; }
+  #load { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; color: #f2e3c4; font: 16px/1.4 -apple-system, system-ui, sans-serif; text-align: center; padding: 24px; background: radial-gradient(ellipse at 50% 30%, #1a2a2a, #05080a 70%); }
+  #load img { width: 96px; height: 96px; border-radius: 22px; box-shadow: 0 6px 30px #000; }
+  #bar { width: min(320px, 70vw); height: 6px; border-radius: 3px; background: #ffffff22; overflow: hidden; }
+  #fill { height: 100%; width: 0; background: #ffb347; transition: width .2s; }
+  #hint { font-size: 13px; opacity: .75; max-width: 380px; }
+  #rotate { display: none; position: fixed; inset: 0; z-index: 9; background: #05080a; color: #f2e3c4; font: 17px -apple-system, system-ui, sans-serif; align-items: center; justify-content: center; text-align: center; padding: 30px; }
+  @media (orientation: portrait) and (pointer: coarse) { #rotate { display: flex; } }
+</style>
+</head>
+<body>
+<canvas id="c" tabindex="-1"></canvas>
+<div id="load">
+  <img src="icon.png" alt="">
+  <div><b>Trốn Tìm — Làng cổ lúc nửa đêm</b><br><span id="msg">Đang tải…</span></div>
+  <div id="bar"><div id="fill"></div></div>
+  <div id="hint">iPhone: bấm nút <b>Chia sẻ</b> → <b>Thêm vào MH chính</b> để có biểu tượng như ứng dụng, mở toàn màn hình.<br>Lần đầu tải hơi lâu, các lần sau mở ngay.</div>
+</div>
+<div id="rotate">Xoay ngang điện thoại để chơi ↻</div>
+<script src="Build/TronTim-Web.loader.js"></script>
+<script>
+  // bản build 2026-11-19 17:51
+  const canvas = document.getElementById('c');
+  const config = {
+    dataUrl: 'Build/TronTim-Web.data.unityweb',
+    frameworkUrl: 'Build/TronTim-Web.framework.js.unityweb',
+    codeUrl: 'Build/TronTim-Web.wasm.unityweb',
+    companyName: 'HNS', productName: 'Trốn Tìm', productVersion: '0.1',
+    matchWebGLToCanvasSize: true,
+    // màn hình Retina rất nhiều điểm ảnh — giới hạn để chạy mượt
+    devicePixelRatio: Math.min(window.devicePixelRatio || 1, /iPhone|iPad|Android/i.test(navigator.userAgent) ? 1.5 : 2),
+  };
+  createUnityInstance(canvas, config, p => {
+    document.getElementById('fill').style.width = Math.round(p * 100) + '%';
+    document.getElementById('msg').textContent = p < 0.9 ? 'Đang tải… ' + Math.round(p * 100) + '%' : 'Đang dựng làng…';
+  }).then(() => {
+    document.getElementById('load').remove();
+  }).catch(e => {
+    document.getElementById('msg').textContent = 'Không chạy được: ' + e;
+  });
+  document.addEventListener('gesturestart', e => e.preventDefault());
+</script>
+</body>
+</html>
